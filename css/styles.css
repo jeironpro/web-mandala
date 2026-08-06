@@ -113,6 +113,11 @@ body {
 .panel--herramientas {
   display: flex;
   flex-direction: column;
+  /* En móvil: sin borde exterior, separado del borde superior del
+     viewport y con línea divisora inferior hacia la section. */
+  margin-top: var(--espacio-lateral);
+  border: 0;
+  border-bottom: var(--rule-hairline);
 }
 
 /* Identidad: título display y subtítulo monoespaciado. */
@@ -267,9 +272,11 @@ body {
   color: var(--color-accent-deep);
 }
 
-/* Pie del panel (Web Mandala), anclado al fondo del nav. */
+/* Pie del panel (Web Mandala).
+   En móvil su regla superior conserva la misma separación que los
+   demás grupos; en escritorio el margin-top:auto la ancla al fondo. */
 .panel__pie {
-  margin: auto 0 0;
+  margin: var(--space-lg) 0 0;
   padding-top: var(--space-md);
   border-top: var(--rule-hairline);
   font-family: var(--font-outlier);
@@ -352,7 +359,7 @@ body {
     max-width: none;
     margin: 0;
     padding: 0;
-    grid-template-columns: 15rem minmax(0, 1fr);
+    grid-template-columns: 18rem minmax(0, 1fr);
     grid-template-rows: 1fr;
     grid-template-areas: 'herramientas lienzo';
     gap: var(--space-2xl);
@@ -360,6 +367,9 @@ body {
 
   .panel--herramientas {
     grid-area: herramientas;
+    /* Restaura el borde completo y sin separación superior en escritorio. */
+    margin-top: 0;
+    border: var(--rule-hairline);
     /* Desplazamiento propio cuando el contenido excede la altura. */
     min-height: 0;
     overflow-y: auto;
@@ -375,6 +385,11 @@ body {
     overscroll-behavior-y: contain;
     /* Esquinas rectas al pegar al borde del viewport. */
     border-radius: 0;
+  }
+
+  /* El pie vuelve a anclarse al fondo del nav en escritorio. */
+  .panel__pie {
+    margin-top: auto;
   }
 
   /* La figura se centra con margen automático: permite hacer scroll
