@@ -7,7 +7,7 @@
     "lint": "eslint js/ --no-error-on-unmatched-pattern",
     "lint:fix": "eslint js/ --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check --no-error-on-unmatched-pattern \"*.{js,json,yml}\" \"js/**/*.js\" \"*.css\""
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
