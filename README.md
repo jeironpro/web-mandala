@@ -60,13 +60,13 @@ Los mandalas se **generan proceduralmente** en SVG mediante simetría rotacional
 
 El diseño sigue la skill **Hallmark**: tema **Newsprint** (papel crema, tinta, acento cálido, metáfora de imprenta), macroestructura **Workbench**, tipografía de pares _Instrument Serif_ (display) + _IBM Plex Sans_ (cuerpo) + _IBM Plex Mono_ (etiquetas). Las decisiones y el registro están en:
 
-- `tokens.css` — sistema de tokens (colores OKLCH, tipografía, escala 4 pt, movimiento).
+- `css/tokens.css` — sistema de tokens (colores OKLCH, tipografía, escala 4 pt, movimiento).
 - `.hallmark/log.json` — memoria de proyecto (diversificación de macroestructuras).
 
 ## Interfaz
 
 - La interfaz se organiza en un único **panel de herramientas** (a la izquierda) que incluye el título _Mandalas_, el subtítulo _Colorea, guarda e imprime. Sin registro._, la paleta de colores y las acciones, cerrado con el pie **Web Mandala**.
-- **Favicon** SVG con marca de mandala (`favicon.svg`), enlazado desde `index.html`.
+- **Favicon** SVG con marca de mandala (`img/favicon.svg`), enlazado desde `index.html`.
 
 ## Reglas de estilo
 
