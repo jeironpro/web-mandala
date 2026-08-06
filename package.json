@@ -1,0 +1,18 @@
+{
+  "name": "web-mandala",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Generador de mandalas en SVG para colorear en línea e imprimir.",
+  "scripts": {
+    "lint": "eslint js/ --no-error-on-unmatched-pattern",
+    "lint:fix": "eslint js/ --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check --no-error-on-unmatched-pattern \"*.{js,json,yml}\" \"js/**/*.js\" \"*.css\""
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "prettier": "^3.0.0"
+  }
+}
