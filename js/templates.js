@@ -6,19 +6,33 @@
  * descriptores de pétalos que se replican alrededor del centro.
  *
  * Tipos de pétalo disponibles:
- *  - "cuna":   sector circular (triángulo con borde curvo).
- *  - "petalo": borde exterior curvo tipo lente.
- *  - "gota":   círculo (su "ancho" controla el radio del círculo).
+ *  - "cuna":     sector circular (triángulo con borde curvo).
+ *  - "petalo":   borde exterior curvo tipo lente.
+ *  - "gota":     círculo (su "ancho" controla el radio del círculo).
+ *  - "diamante": lente con cierre en línea recta.
  *
- * Expone el namespace global MandalaTemplates.
+ * El catálogo combina 10 diseños curados (PLANTILLAS_BASE) con 90 variaciones
+ * generadas de forma determinista (misma semilla por índice), de modo que cada
+ * plantilla se dibuja siempre igual. Se expone el namespace MandalaTemplates.
  */
 (function (global) {
   'use strict';
 
-  // La mitad del giro completo y un cuarto, usados como desplazamientos
-  // para intercalar los pétalos entre bandas.
+  /* ------------------------------------------------------------------------
+   * Constantes compartidas
+   * ---------------------------------------------------------------------- */
+
+  // Desplazamientos angulares usados para intercalar pétalos entre bandas:
+  // la mitad del giro (PI) y un cuarto de giro.
   const MEDIO_GIRO = Math.PI;
   const CUARTO_GIRO = Math.PI / 2;
+
+  // Radio exterior máximo del lienzo (debe coincidir con Mandala.RADIO_MAX).
+  const RADIO_MAXIMO = 290;
+
+  /* ------------------------------------------------------------------------
+   * Catálogo curado (10 diseños definidos a mano)
+   * ---------------------------------------------------------------------- */
 
   const PLANTILLAS_BASE = [
     {
@@ -472,17 +486,33 @@
     },
   ];
 
-  // Catálogo ampliado: genera variaciones deterministas a partir de las 10
-  // plantillas curadas para ofrecer 100 diseños estables (misma semilla por
-  // índice), con nombres compuestos únicos para el selector y los pies.
+  /* ------------------------------------------------------------------------
+   * Catálogo ampliado: variaciones generadas de forma determinista
+   * ---------------------------------------------------------------------- */
+
+  // Cantidad de variaciones generadas que completan el catálogo hasta 100.
   const CANTIDAD_GENERADAS = 90;
-  const RADIO_MAXIMO = 290;
+
+  // Espacio paramétrico: simetrías válidas, tipos de pétalo y rangos de ancho
+  // admitidos por el motor (ver mandala.js) para cada tipo.
   const SIMETRIAS = [4, 5, 6, 8, 10, 12, 16];
   const TIPOS_PETALO = ['cuna', 'petalo', 'gota', 'diamante'];
   const ANCHO_MINIMO = { cuna: 0.25, petalo: 0.5, gota: 0.4, diamante: 0.4 };
   const ANCHO_MAXIMO = { cuna: 1, petalo: 1, gota: 1.5, diamante: 1 };
+
+  // Número de bandas por plantilla generada.
+  const BANDAS_MINIMAS = 3;
+  const BANDAS_MAXIMAS = 4;
+
+  // Grosor radial mínimo entre bandas consecutivas (evita aros degenerados).
+  const GROSOR_MINIMO_BANDA = 10;
+
+  // Rango del radio del círculo de cierre (centro) cuando está presente.
   const RADIO_CENTRO_MINIMO = 8;
   const RADIO_CENTRO_MAXIMO = 16;
+
+  // Léxicos para componer nombres propios únicos: 9 sustantivos × 10 adjetivos
+  // = 90 combinaciones distintas que cubren las 90 variaciones.
   const SUSTANTIVOS = [
     'Flor',
     'Sol',
@@ -507,7 +537,10 @@
     'sutil',
   ];
 
-  /** Generador pseudoaleatorio determinista (mulberry32) sembrado por índice. */
+  /**
+   * Generador pseudoaleatorio determinista (mulberry32) sembrado por índice:
+   * la misma semilla produce siempre la misma secuencia de números.
+   */
   function crearAleatorio(semilla) {
     let estado = semilla >>> 0;
     return function aleatorio() {
@@ -518,31 +551,53 @@
     };
   }
 
+  /** Devuelve un entero aleatorio dentro del intervalo [minimo, maximo]. */
   function enteroEntre(aleatorio, minimo, maximo) {
     return minimo + Math.floor(aleatorio() * (maximo - minimo + 1));
   }
 
+  /** Devuelve un real aleatorio dentro del intervalo [minimo, maximo). */
   function realEntre(aleatorio, minimo, maximo) {
     return minimo + aleatorio() * (maximo - minimo);
   }
 
-  /** Reparte el radio máximo en las bandas mediante cortes aleatorios ordenados. */
+  /** Redondea un número a dos decimales para mantener los datos compactos. */
+  function redondearDosDecimales(valor) {
+    return Math.round(valor * 100) / 100;
+  }
+
+  /** Compone el id único de una variación (p. ej. "generada-05"). */
+  function idGenerado(indice) {
+    return `generada-${String(indice + 1).padStart(2, '0')}`;
+  }
+
+  /** Compone el nombre propio único de una variación (sustantivo + adjetivo). */
+  function nombreGenerado(indice) {
+    const sustantivo = SUSTANTIVOS[Math.floor(indice / ADJETIVOS.length)];
+    const adjetivo = ADJETIVOS[indice % ADJETIVOS.length];
+    return `${sustantivo} ${adjetivo}`;
+  }
+
+  /**
+   * Reparte el radio máximo en las bandas mediante cortes aleatorios
+   * ordenados, garantizando un grosor mínimo entre bandas consecutivas.
+   */
   function particionarRadios(aleatorio, cantidadBandas) {
-    const GROSOR_MINIMO = 10;
     const cortes = [];
     for (let i = 0; i < cantidadBandas - 1; i += 1) {
       cortes.push(aleatorio());
     }
     cortes.sort((a, b) => a - b);
+
     const limites = [];
     let ultimo = 0;
     for (const fraccion of cortes) {
       let valor = Math.round(fraccion * RADIO_MAXIMO);
-      if (valor < ultimo + GROSOR_MINIMO) {
-        valor = ultimo + GROSOR_MINIMO;
+      if (valor < ultimo + GROSOR_MINIMO_BANDA) {
+        valor = ultimo + GROSOR_MINIMO_BANDA;
       }
-      if (valor > RADIO_MAXIMO - GROSOR_MINIMO) {
-        valor = RADIO_MAXIMO - GROSOR_MINIMO;
+      if (valor > RADIO_MAXIMO - GROSOR_MINIMO_BANDA) {
+        valor = RADIO_MAXIMO - GROSOR_MINIMO_BANDA;
       }
       limites.push(valor);
       ultimo = valor;
@@ -551,11 +606,11 @@
     return limites;
   }
 
-  /** Genera una plantilla determinista (misma semilla → mismo diseño). */
+  /** Genera una plantilla determinista a partir de su índice (misma semilla → mismo diseño). */
   function generarPlantilla(indice) {
     const aleatorio = crearAleatorio(indice + 1);
     const simetria = SIMETRIAS[enteroEntre(aleatorio, 0, SIMETRIAS.length - 1)];
-    const cantidadBandas = enteroEntre(aleatorio, 3, 4);
+    const cantidadBandas = enteroEntre(aleatorio, BANDAS_MINIMAS, BANDAS_MAXIMAS);
     const limites = particionarRadios(aleatorio, cantidadBandas);
     const conCentro = aleatorio() < 0.5;
 
@@ -564,9 +619,9 @@
     for (let b = 0; b < cantidadBandas; b += 1) {
       const radioExterior = limites[b];
       const tipo = TIPOS_PETALO[enteroEntre(aleatorio, 0, TIPOS_PETALO.length - 1)];
-      const ancho =
-        Math.round(realEntre(aleatorio, ANCHO_MINIMO[tipo], ANCHO_MAXIMO[tipo]) * 100) /
-        100;
+      const ancho = redondearDosDecimales(
+        realEntre(aleatorio, ANCHO_MINIMO[tipo], ANCHO_MAXIMO[tipo])
+      );
       const inicio = aleatorio() < 0.5 ? 0 : MEDIO_GIRO / simetria;
       bandas.push({
         radioInterior,
@@ -585,10 +640,8 @@
     }
 
     const plantilla = {
-      id: `generada-${String(indice + 1).padStart(2, '0')}`,
-      nombre: `${SUSTANTIVOS[Math.floor(indice / ADJETIVOS.length)]} ${
-        ADJETIVOS[indice % ADJETIVOS.length]
-      }`,
+      id: idGenerado(indice),
+      nombre: nombreGenerado(indice),
       simetria,
       bandas,
     };
@@ -600,12 +653,14 @@
     return plantilla;
   }
 
+  // Construye el catálogo final: las 10 curadas seguidas de las 90 variaciones.
   const PLANTILLAS_GENERADAS = [];
   for (let i = 0; i < CANTIDAD_GENERADAS; i += 1) {
     PLANTILLAS_GENERADAS.push(generarPlantilla(i));
   }
   const PLANTILLAS = PLANTILLAS_BASE.concat(PLANTILLAS_GENERADAS);
 
+  /** Devuelve la plantilla con el id indicado (por defecto, la primera). */
   function obtenerPorId(id) {
     return PLANTILLAS.find((plantilla) => plantilla.id === id) || PLANTILLAS[0];
   }
