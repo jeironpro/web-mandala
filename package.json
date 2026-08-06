@@ -4,7 +4,7 @@
   "private": true,
   "description": "Generador de mandalas en SVG para colorear en línea e imprimir.",
   "scripts": {
-    "lint": "eslint js/",
+    "lint": "eslint js/ --no-error-on-unmatched-pattern",
     "lint:fix": "eslint js/ --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
