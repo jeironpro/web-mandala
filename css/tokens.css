@@ -73,7 +73,7 @@
   --ancho-enfoque: 2px;
   --desfase-enfoque: 3px;
   --ancho-max: 68rem;
-  --ancho-mandala: 34rem; /* tamaño máximo del mandala dentro del lienzo */
+  --ancho-mandala: 42rem; /* tamaño máximo del mandala dentro del lienzo */
   --medida-texto: 65ch;
   --espacio-lateral: clamp(1rem, 4vw, 1.5rem);
 }

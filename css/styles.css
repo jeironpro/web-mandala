@@ -8,12 +8,12 @@
 @import 'tokens.css';
 
 /* ------------------------------------------------------------
-   Recorte global del desbordamiento horizontal
-   (evita la aparición de una barra de scroll horizontal).
+   Sin scroll de documento: el workbench ocupa todo el viewport y
+   cada panel gestiona su propio desplazamiento interno.
    ------------------------------------------------------------ */
 html,
 body {
-  overflow-x: clip;
+  overflow: hidden;
 }
 
 /* ------------------------------------------------------------
@@ -75,17 +75,24 @@ body {
 
 /* ------------------------------------------------------------
    Contenedor principal (macroestructura Workbench)
+   ------------------------------------------------------------
+   Ocupa el 100 % del viewport (alto y ancho) sin margen exterior.
+   En móvil apila los paneles en columna: el nav arriba y el lienzo
+   ocupando el resto; en escritorio la rejilla de dos columnas se
+   define en el media de min-width.
    ------------------------------------------------------------ */
 .taller {
   width: 100%;
-  max-width: var(--ancho-max);
-  /* Centra el bloque principal en la flex columna de body. */
-  margin: auto;
-  padding: 0 var(--espacio-lateral) var(--space-4xl);
+  max-width: none;
+  margin: 0;
+  height: 100vh;
+  height: 100dvh;
+  padding: 0;
 
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: var(--space-2xl);
-  align-content: start;
+  overflow: hidden;
 }
 
 /* ------------------------------------------------------------
@@ -102,10 +109,16 @@ body {
 
 /* ------------------------------------------------------------
    Panel de herramientas (nav)
+   ------------------------------------------------------------
+   Alto natural (auto) en móvil con scroll propio si el contenido
+   excede el viewport; el pie queda anclado al fondo del panel.
    ------------------------------------------------------------ */
 .panel--herramientas {
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
 }
 
 /* Identidad: título display y subtítulo monoespaciado. */
@@ -274,7 +287,21 @@ body {
 
 /* ------------------------------------------------------------
    Lienzo (superficie de trabajo)
+   ------------------------------------------------------------
+   En móvil ocupa el resto del viewport bajo el nav y gestiona su
+   propio desplazamiento; sin borde exterior de sección.
    ------------------------------------------------------------ */
+.panel--lienzo {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  gap: var(--space-md);
+  border: 0;
+}
+
 .lienzo {
   margin: 0;
 }
@@ -321,20 +348,10 @@ body {
    contenido en pantallas cortas.
    ============================================================ */
 @media (min-width: 40rem) {
-  /* En escritorio el workbench es de altura fija: el documento no debe
-     scrollar; el desplazamiento lo gestionan los paneles de forma interna. */
-  html,
-  body {
-    overflow: hidden;
-  }
-
+  /* En escritorio el workbench es de altura fija (el documento ya no
+     scrolla, ver base); los paneles se reparten en dos columnas. */
   .taller {
-    height: 100vh;
-    height: 100dvh;
-    /* Edge-to-edge: los paneles ocupan todo el viewport sin margen exterior. */
-    max-width: none;
-    margin: 0;
-    padding: 0;
+    display: grid;
     grid-template-columns: 15rem minmax(0, 1fr);
     grid-template-rows: 1fr;
     grid-template-areas: 'herramientas lienzo';
@@ -343,22 +360,12 @@ body {
 
   .panel--herramientas {
     grid-area: herramientas;
-    /* Desplazamiento propio cuando el contenido excede la altura. */
-    min-height: 0;
-    overflow-y: auto;
-    overscroll-behavior-y: contain;
     /* Esquinas rectas al pegar al borde del viewport. */
     border-radius: 0;
   }
 
   .panel--lienzo {
     grid-area: lienzo;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    overflow-y: auto;
-    overscroll-behavior-y: contain;
-    gap: var(--space-md);
     /* Esquinas rectas al pegar al borde del viewport. */
     border-radius: 0;
   }
@@ -366,11 +373,13 @@ body {
   /* La figura se centra con margen automático: permite hacer scroll
      correcto hasta el inicio cuando el contenido supera la altura. */
   .panel--lienzo .lienzo {
+    width: 100%;
     margin: auto;
   }
 
   /* El mandala conserva un tamaño cómodo y se centra en su panel. */
   .lienzo__superficie {
+    width: 100%;
     max-width: var(--ancho-mandala);
     margin-inline: auto;
   }
@@ -418,6 +427,7 @@ body {
 
   .taller {
     display: flex;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
@@ -431,6 +441,7 @@ body {
     border: 0;
     padding: 0;
     width: auto;
+    flex: 0 0 auto;
   }
 
   .lienzo__superficie {
