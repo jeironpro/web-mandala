@@ -20,7 +20,7 @@
   const MEDIO_GIRO = Math.PI;
   const CUARTO_GIRO = Math.PI / 2;
 
-  const PLANTILLAS = [
+  const PLANTILLAS_BASE = [
     {
       id: 'clasico',
       nombre: 'Clásico',
@@ -471,6 +471,140 @@
       centro: { radio: 12 },
     },
   ];
+
+  // Catálogo ampliado: genera variaciones deterministas a partir de las 10
+  // plantillas curadas para ofrecer 100 diseños estables (misma semilla por
+  // índice), con nombres compuestos únicos para el selector y los pies.
+  const CANTIDAD_GENERADAS = 90;
+  const RADIO_MAXIMO = 290;
+  const SIMETRIAS = [4, 5, 6, 8, 10, 12, 16];
+  const TIPOS_PETALO = ['cuna', 'petalo', 'gota', 'diamante'];
+  const ANCHO_MINIMO = { cuna: 0.25, petalo: 0.5, gota: 0.4, diamante: 0.4 };
+  const ANCHO_MAXIMO = { cuna: 1, petalo: 1, gota: 1.5, diamante: 1 };
+  const RADIO_CENTRO_MINIMO = 8;
+  const RADIO_CENTRO_MAXIMO = 16;
+  const SUSTANTIVOS = [
+    'Flor',
+    'Sol',
+    'Rosas',
+    'Estrella',
+    'Abanico',
+    'Loto',
+    'Corona',
+    'Ondas',
+    'Campana',
+  ];
+  const ADJETIVOS = [
+    'serena',
+    'fogosa',
+    'luminosa',
+    'silvestre',
+    'dorada',
+    'celeste',
+    'nocturna',
+    'tropical',
+    'esmeralda',
+    'sutil',
+  ];
+
+  /** Generador pseudoaleatorio determinista (mulberry32) sembrado por índice. */
+  function crearAleatorio(semilla) {
+    let estado = semilla >>> 0;
+    return function aleatorio() {
+      estado = (estado + 0x6d2b79f5) | 0;
+      let mezcla = Math.imul(estado ^ (estado >>> 15), 1 | estado);
+      mezcla = (mezcla + Math.imul(mezcla ^ (mezcla >>> 7), 61 | mezcla)) ^ mezcla;
+      return ((mezcla ^ (mezcla >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function enteroEntre(aleatorio, minimo, maximo) {
+    return minimo + Math.floor(aleatorio() * (maximo - minimo + 1));
+  }
+
+  function realEntre(aleatorio, minimo, maximo) {
+    return minimo + aleatorio() * (maximo - minimo);
+  }
+
+  /** Reparte el radio máximo en las bandas mediante cortes aleatorios ordenados. */
+  function particionarRadios(aleatorio, cantidadBandas) {
+    const GROSOR_MINIMO = 10;
+    const cortes = [];
+    for (let i = 0; i < cantidadBandas - 1; i += 1) {
+      cortes.push(aleatorio());
+    }
+    cortes.sort((a, b) => a - b);
+    const limites = [];
+    let ultimo = 0;
+    for (const fraccion of cortes) {
+      let valor = Math.round(fraccion * RADIO_MAXIMO);
+      if (valor < ultimo + GROSOR_MINIMO) {
+        valor = ultimo + GROSOR_MINIMO;
+      }
+      if (valor > RADIO_MAXIMO - GROSOR_MINIMO) {
+        valor = RADIO_MAXIMO - GROSOR_MINIMO;
+      }
+      limites.push(valor);
+      ultimo = valor;
+    }
+    limites.push(RADIO_MAXIMO);
+    return limites;
+  }
+
+  /** Genera una plantilla determinista (misma semilla → mismo diseño). */
+  function generarPlantilla(indice) {
+    const aleatorio = crearAleatorio(indice + 1);
+    const simetria = SIMETRIAS[enteroEntre(aleatorio, 0, SIMETRIAS.length - 1)];
+    const cantidadBandas = enteroEntre(aleatorio, 3, 4);
+    const limites = particionarRadios(aleatorio, cantidadBandas);
+    const conCentro = aleatorio() < 0.5;
+
+    const bandas = [];
+    let radioInterior = 0;
+    for (let b = 0; b < cantidadBandas; b += 1) {
+      const radioExterior = limites[b];
+      const tipo = TIPOS_PETALO[enteroEntre(aleatorio, 0, TIPOS_PETALO.length - 1)];
+      const ancho =
+        Math.round(realEntre(aleatorio, ANCHO_MINIMO[tipo], ANCHO_MAXIMO[tipo]) * 100) /
+        100;
+      const inicio = aleatorio() < 0.5 ? 0 : MEDIO_GIRO / simetria;
+      bandas.push({
+        radioInterior,
+        radioExterior,
+        petalos: [
+          {
+            tipo,
+            radioInterior,
+            radioExterior,
+            ancho,
+            inicio,
+          },
+        ],
+      });
+      radioInterior = radioExterior;
+    }
+
+    const plantilla = {
+      id: `generada-${String(indice + 1).padStart(2, '0')}`,
+      nombre: `${SUSTANTIVOS[Math.floor(indice / ADJETIVOS.length)]} ${
+        ADJETIVOS[indice % ADJETIVOS.length]
+      }`,
+      simetria,
+      bandas,
+    };
+    if (conCentro) {
+      plantilla.centro = {
+        radio: enteroEntre(aleatorio, RADIO_CENTRO_MINIMO, RADIO_CENTRO_MAXIMO),
+      };
+    }
+    return plantilla;
+  }
+
+  const PLANTILLAS_GENERADAS = [];
+  for (let i = 0; i < CANTIDAD_GENERADAS; i += 1) {
+    PLANTILLAS_GENERADAS.push(generarPlantilla(i));
+  }
+  const PLANTILLAS = PLANTILLAS_BASE.concat(PLANTILLAS_GENERADAS);
 
   function obtenerPorId(id) {
     return PLANTILLAS.find((plantilla) => plantilla.id === id) || PLANTILLAS[0];

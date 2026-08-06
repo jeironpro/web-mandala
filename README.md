@@ -9,14 +9,18 @@ Los mandalas se **generan proceduralmente** en SVG mediante simetría rotacional
 ## Cómo usar
 
 1. Abre `index.html` en el navegador o sírvelo con un servidor estático.
-2. Elige una **plantilla** (hay 10) en el panel de la izquierda.
+2. Elige una **plantilla** (hay 100) en el panel de la izquierda.
 3. Selecciona un **color** de la paleta o usa el selector personalizado.
 4. Haz clic sobre cualquier **región** del mandala para colorearla.
 5. Usa **borrador**, **deshacer/rehacer** (`Ctrl+Z` / `Ctrl+Shift+Z`) y **limpiar**.
 6. **Guarda** el resultado en PNG (2048×2048 px) o en SVG vectorial.
 7. **Imprime**: la vista de impresión muestra únicamente el mandala coloreado, **centrado sobre una hoja en blanco**.
 
-## Plantillas (10)
+## Plantillas (100)
+
+El catálogo combina **10 diseños curados** a mano con **90 variaciones generadas** de forma determinista (misma semilla por índice, por lo que cada plantilla se dibuja siempre igual).
+
+### Diseños curados
 
 | Plantilla      | Simetría | Detalle                                            |
 | -------------- | -------- | -------------------------------------------------- |
@@ -31,13 +35,17 @@ Los mandalas se **generan proceduralmente** en SVG mediante simetría rotacional
 | Geométrico     | 4        | Sectores amplios con detalles                      |
 | Puntas         | 16       | Cuñas muy finas de detalle fino                    |
 
+### Variaciones generadas (90)
+
+Las 90 variaciones se componen combinando simetrías (4, 5, 6, 8, 10, 12, 16), de 3 a 4 bandas con secuencias de tipos (cuna, pétalo, gota, diamante), anchos y desfases acotados y un centro opcional, siempre dentro del radio máximo del lienzo. Cada una tiene id y nombre propio únicos (`generada-01`… `generada-90`, p. ej. _Flor serena_, _Corona esmeralda_).
+
 ## Cómo funciona el generador
 
 - `js/mandala.js` — motor que construye el SVG con `document.createElementNS` (sin inyección de HTML). Crea tres tipos de región:
   - **Aros**: bandas anulares concéntricas (fill-rule `evenodd`).
   - **Pétalos**: figuras replicadas N veces; tipos disponibles `cuna`, `petalo`, `gota`, `diamante`.
   - **Centro**: círculo opcional de cierre.
-- `js/templates.js` — define las plantillas (simetría, bandas, pétalos). Para añadir una, agrega un objeto al array `PLANTILLAS`:
+- `js/templates.js` — define las plantillas (simetría, bandas, pétalos). Las 10 curadas se definen en `PLANTILLAS_BASE`; las 90 variaciones restantes se generan de forma determinista (`generarPlantilla`). Para añadir una curada, agrega un objeto a `PLANTILLAS_BASE`:
   ```js
   {
     id: 'mi-plantilla',
