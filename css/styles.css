@@ -331,11 +331,14 @@ body {
   .taller {
     height: 100vh;
     height: 100dvh;
+    /* Edge-to-edge: los paneles ocupan todo el viewport sin margen exterior. */
+    max-width: none;
+    margin: 0;
+    padding: 0;
     grid-template-columns: 15rem minmax(0, 1fr);
     grid-template-rows: 1fr;
     grid-template-areas: 'herramientas lienzo';
     gap: var(--space-2xl);
-    padding: var(--espacio-lateral);
   }
 
   .panel--herramientas {
@@ -344,6 +347,8 @@ body {
     min-height: 0;
     overflow-y: auto;
     overscroll-behavior-y: contain;
+    /* Esquinas rectas al pegar al borde del viewport. */
+    border-radius: 0;
   }
 
   .panel--lienzo {
@@ -354,6 +359,8 @@ body {
     overflow-y: auto;
     overscroll-behavior-y: contain;
     gap: var(--space-md);
+    /* Esquinas rectas al pegar al borde del viewport. */
+    border-radius: 0;
   }
 
   /* La figura se centra con margen automático: permite hacer scroll
