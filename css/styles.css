@@ -1,18 +1,24 @@
+/* ============================================================
+   Estilos de página del coloreador de mandalas
+   ------------------------------------------------------------
+   Emplea únicamente tokens definidos en tokens.css.
+   Diseño mobile-first: la base es para móvil y los refinamientos
+   de pantallas medianas/grandes se declaran con min-width.
+   ============================================================ */
 @import 'tokens.css';
 
-/* Estilos de página del coloreador de mandalas. Emplea únicamente tokens
-   definidos en tokens.css; diseño mobile-first con media queries min-width. */
-
-/* ---- Recorte global del desbordamiento horizontal ---- */
-html {
-  overflow-x: clip;
-}
-
+/* ------------------------------------------------------------
+   Recorte global del desbordamiento horizontal
+   (evita la aparición de una barra de scroll horizontal).
+   ------------------------------------------------------------ */
+html,
 body {
   overflow-x: clip;
 }
 
-/* ---- Base ---- */
+/* ------------------------------------------------------------
+   Reset básico de caja y márgenes
+   ------------------------------------------------------------ */
 *,
 *::before,
 *::after {
@@ -25,10 +31,16 @@ body {
   padding: 0;
 }
 
+/* ------------------------------------------------------------
+   Base del documento
+   ------------------------------------------------------------ */
 body {
+  /* Columna flexible que permite centrar el contenedor principal. */
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
   min-height: 100dvh;
+
   font-family: var(--font-body);
   font-size: var(--text-base);
   line-height: var(--lh-body);
@@ -36,12 +48,19 @@ body {
   background-color: var(--color-paper);
 }
 
-/* ---- Enfoque visible inmediato (nunca animado) ---- */
+/* ------------------------------------------------------------
+   Enfoque visible inmediato (nunca animado)
+   ------------------------------------------------------------ */
 :focus-visible {
   outline: var(--ancho-enfoque) solid var(--color-focus);
   outline-offset: var(--desfase-enfoque);
 }
 
+/* ------------------------------------------------------------
+   Utilidades
+   ------------------------------------------------------------ */
+
+/* Texto visible solo para lectores de pantalla. */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -54,12 +73,42 @@ body {
   border: 0;
 }
 
-/* ---- Cabecera del panel (N9 wordmark dentro del nav) ---- */
+/* ------------------------------------------------------------
+   Contenedor principal (macroestructura Workbench)
+   ------------------------------------------------------------ */
+.taller {
+  width: 100%;
+  max-width: var(--ancho-max);
+  /* Centra el bloque principal en la flex columna de body. */
+  margin: auto;
+  padding: 0 var(--espacio-lateral) var(--space-4xl);
+
+  display: grid;
+  gap: var(--space-2xl);
+  align-content: start;
+}
+
+/* ------------------------------------------------------------
+   Panel
+   ------------------------------------------------------------ */
+.panel {
+  background: var(--color-paper);
+  border: var(--rule-hairline);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  /* Permite que los paneles se encogan dentro de la rejilla. */
+  min-width: 0;
+}
+
+/* ------------------------------------------------------------
+   Panel de herramientas (nav)
+   ------------------------------------------------------------ */
 .panel--herramientas {
   display: flex;
   flex-direction: column;
 }
 
+/* Identidad: título display y subtítulo monoespaciado. */
 .panel__titulo {
   margin: 0;
   font-family: var(--font-display);
@@ -77,27 +126,7 @@ body {
   color: var(--color-muted);
 }
 
-/* ---- Contenedor principal (Workbench) ---- */
-.taller {
-  width: 100%;
-  max-width: var(--ancho-max);
-  margin: auto; /* centra el bloque principal en la flex columna de body */
-  padding: 0 var(--espacio-lateral) var(--space-4xl);
-  display: grid;
-  gap: var(--space-2xl);
-  align-content: start;
-}
-
-/* ---- Panel ---- */
-.panel {
-  background: var(--color-paper);
-  border: var(--rule-hairline);
-  border-radius: var(--radius-md);
-  padding: var(--space-lg);
-  min-width: 0; /* evita desbordar la rejilla en móvil */
-}
-
-/* ---- Herramientas ---- */
+/* Separación entre grupos de herramientas (regla superior). */
 .panel__subtitulo + .herramientas__grupo,
 .herramientas__grupo + .herramientas__grupo {
   margin-top: var(--space-lg);
@@ -105,6 +134,7 @@ body {
   border-top: var(--rule-hairline);
 }
 
+/* Rótulo de cada grupo de herramientas. */
 .herramientas__caption {
   margin: 0 0 var(--space-xs);
   font-family: var(--font-outlier);
@@ -115,6 +145,7 @@ body {
   color: var(--color-muted);
 }
 
+/* Selector de plantilla: altura de diana táctil (44 px). */
 .herramientas__select {
   min-height: var(--tamano-toque);
   width: 100%;
@@ -128,7 +159,7 @@ body {
   cursor: pointer;
 }
 
-/* Paleta */
+/* Paleta de colores predefinidos: rejilla adaptable al ancho. */
 .paleta {
   display: grid;
   grid-template-columns: repeat(auto-fill, var(--tamano-toque));
@@ -149,6 +180,7 @@ body {
   border-color: var(--color-neutral);
 }
 
+/* Ficha de color seleccionada: anillo de acento. */
 .paleta__color--activo {
   border-color: var(--color-accent);
   box-shadow:
@@ -156,7 +188,7 @@ body {
     0 0 0 1px var(--color-accent);
 }
 
-/* Color personalizado */
+/* Selector de color personalizado (etiqueta + input[type=color]). */
 .herramientas__personalizado {
   display: flex;
   align-items: center;
@@ -175,9 +207,17 @@ body {
   border-radius: var(--radius-sm);
   background: var(--color-paper);
   cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
-/* Acciones */
+/* Controla el color de acento de los controles nativos. */
+.herramientas__select,
+.herramientas__color {
+  accent-color: var(--color-accent);
+}
+
+/* Botones de acción: rejilla adaptable con dianas de 44 px. */
 .herramientas__acciones {
   display: grid;
   grid-template-columns: repeat(auto-fill, var(--tamano-toque));
@@ -213,13 +253,28 @@ body {
   cursor: not-allowed;
 }
 
+/* Botón activo (p. ej. borrador encendido). */
 .herramienta--activo {
   background: var(--color-paper-2);
   border-color: var(--color-accent);
   color: var(--color-accent-deep);
 }
 
-/* ---- Lienzo (superficie de trabajo) ---- */
+/* Pie del panel (Web Mandala), anclado al fondo del nav. */
+.panel__pie {
+  margin: auto 0 0;
+  padding-top: var(--space-md);
+  border-top: var(--rule-hairline);
+  font-family: var(--font-outlier);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* ------------------------------------------------------------
+   Lienzo (superficie de trabajo)
+   ------------------------------------------------------------ */
 .lienzo {
   margin: 0;
 }
@@ -231,6 +286,7 @@ body {
   padding: var(--space-md);
 }
 
+/* SVG del mandala: ocupa el ancho disponible manteniendo la proporción. */
 .lienzo__svg {
   display: block;
   width: 100%;
@@ -247,7 +303,7 @@ body {
   color: var(--color-muted);
 }
 
-/* Mensaje de estado */
+/* Barra de estado accesible (reserva altura para evitar saltos). */
 .estado {
   min-height: var(--space-lg);
   margin: var(--space-sm) 0 0;
@@ -256,23 +312,24 @@ body {
   color: var(--color-muted);
 }
 
-/* ---- Pie del nav (Ft2 inline) ---- */
-.panel__pie {
-  margin: auto 0 0;
-  padding-top: var(--space-md);
-  border-top: var(--rule-hairline);
-  font-family: var(--font-outlier);
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-  color: var(--color-muted);
-}
-
 /* ============================================================
    Pantallas medianas y grandes (mobile-first, min-width)
+   ------------------------------------------------------------
+   Dos columnas: herramientas + lienzo, con ambos paneles de la
+   misma altura ocupando el 100 % del alto del viewport. Cada
+   panel gestiona su propio desplazamiento para no recortar
+   contenido en pantallas cortas.
    ============================================================ */
 @media (min-width: 40rem) {
+  /* En escritorio el workbench es de altura fija: el documento no debe
+     scrollar; el desplazamiento lo gestionan los paneles de forma interna. */
+  html,
+  body {
+    overflow: hidden;
+  }
+
   .taller {
+    height: 100vh;
     height: 100dvh;
     grid-template-columns: 15rem minmax(0, 1fr);
     grid-template-rows: 1fr;
@@ -283,19 +340,47 @@ body {
 
   .panel--herramientas {
     grid-area: herramientas;
+    /* Desplazamiento propio cuando el contenido excede la altura. */
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
   }
 
   .panel--lienzo {
     grid-area: lienzo;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
     gap: var(--space-md);
+  }
+
+  /* La figura se centra con margen automático: permite hacer scroll
+     correcto hasta el inicio cuando el contenido supera la altura. */
+  .panel--lienzo .lienzo {
+    margin: auto;
+  }
+
+  /* El mandala conserva un tamaño cómodo y se centra en su panel. */
+  .lienzo__superficie {
+    max-width: var(--ancho-mandala);
+    margin-inline: auto;
+  }
+
+  /* Leyenda y estado se alinean con el ancho del mandala. */
+  .lienzo__caption,
+  .estado {
+    max-width: var(--ancho-mandala);
+    margin-inline: auto;
   }
 }
 
 /* ============================================================
    Impresión
+   ------------------------------------------------------------
+   La hoja imprime únicamente el mandala coloreado, centrado
+   sobre una hoja en blanco, sin el panel de herramientas.
    ============================================================ */
 @page {
   size: auto;
@@ -317,6 +402,7 @@ body {
     background: var(--color-imprimir);
   }
 
+  /* Se oculta todo lo que no es el mandala en sí. */
   .panel--herramientas,
   .estado,
   .lienzo__caption {
