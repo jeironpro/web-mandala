@@ -1,0 +1,78 @@
+/* Hallmark · genre: editorial · macrostructure: Workbench · theme: Newsprint
+ * enrichment: none · nav: N9 (edge-aligned minimal) · footer: Ft2 (inline rule)
+ * pre-emit critique: P5 H4 E5 S4 R5 V5
+ * axes: paper-band = light · display = roman-serif (Instrument Serif) · accent hue = warm
+ */
+:root {
+  /* ---- Color (OKLCH, ancla cálida) ---- */
+  --color-paper: oklch(97% 0.012 85);
+  --color-paper-2: oklch(93% 0.014 85);
+  --color-paper-3: oklch(89% 0.015 85);
+  --color-rule: oklch(80% 0.012 85);
+  --color-neutral: oklch(56% 0.01 80);
+  --color-muted: oklch(42% 0.012 75);
+  --color-ink: oklch(18% 0.014 70);
+  --color-accent: oklch(58% 0.19 35);
+  --color-accent-deep: oklch(45% 0.16 35);
+  --color-focus: oklch(55% 0.19 55);
+  --color-imprimir: #ffffff; /* papel blanco de la hoja al imprimir */
+
+  /* ---- Tipografía ---- */
+  --font-display: 'Instrument Serif', 'Georgia', ui-serif, serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-outlier: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --text-xs: 0.64rem;
+  --text-sm: 0.8rem;
+  --text-base: 1rem;
+  --text-md: 1.25rem;
+  --text-lg: 1.5625rem;
+  --text-xl: 1.9531rem;
+  --text-2xl: 2.4414rem;
+  --text-3xl: 3.0518rem;
+  --lh-tight: 1.1;
+  --lh-body: 1.6;
+  --tracking-tight: -0.02em;
+  --tracking-wide: 0.1em;
+
+  /* ---- Espaciado (escala 4 pt) ---- */
+  --space-3xs: 0.125rem;
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+  --space-4xl: 9rem;
+
+  /* ---- Movimiento (Newsprint = estático; canon de easing) ---- */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-instant: 0ms;
+  --dur-short: 100ms;
+  --dur-med: 180ms;
+
+  /* ---- Reglas ---- */
+  --rule-hairline: 1px solid var(--color-rule);
+  --rule-strong: 2px solid var(--color-ink);
+
+  /* ---- Radios ---- */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+
+  /* ---- Profundidad y z-index ---- */
+  --shadow-whisper: 0 1px 2px oklch(20% 0.01 70 / 0.05);
+  --z-base: 1;
+  --z-sticky: 200;
+
+  /* ---- Accesibilidad / dianas ---- */
+  --tamano-toque: 2.75rem; /* 44 px */
+  --ancho-enfoque: 2px;
+  --desfase-enfoque: 3px;
+  --ancho-max: 68rem;
+  --medida-texto: 65ch;
+  --espacio-lateral: clamp(1rem, 4vw, 1.5rem);
+}
